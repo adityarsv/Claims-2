@@ -25,5 +25,8 @@ app.add_url_rule('/claims', 'get_claims', get_claims, methods=['GET'])
 app.add_url_rule('/claims/<int:claim_id>', 'update_claim', update_claim, methods=['PUT'])
 app.add_url_rule('/claims/<int:claim_id>', 'delete_claim', delete_claim, methods=['DELETE'])
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    from os import environ
+    port = int(environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
