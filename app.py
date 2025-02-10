@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, jwt_required
 from config import JWT_SECRET_KEY
 from auth import auth_bp
 from policyholders import create_policyholder, get_policyholders, update_policyholder, delete_policyholder
@@ -19,10 +19,6 @@ app.register_blueprint(auth_bp)
 @app.route('/')
 def home():
     return "Welcome to the Claims Management System!"
-
-@app.route('/favicon.ico')
-def favicon():
-    return '', 204 #Return a 204 No Content status
 
 # Policyholders Routes (Protected)
 app.add_url_rule('/policyholders', 'create_policyholder', jwt_required()(create_policyholder), methods=['POST'])
