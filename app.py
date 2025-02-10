@@ -6,6 +6,13 @@ from claims import create_claim, get_claims, update_claim, delete_claim
 app = Flask(__name__)
 
 # ------------------------ ROUTES ------------------------
+@app.route('/')
+def home():
+    return "Welcome to the Claims Management System!"
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204  # Return a 204 No Content status
 
 # Policyholders Routes
 app.add_url_rule('/policyholders', 'create_policyholder', create_policyholder, methods=['POST'])
