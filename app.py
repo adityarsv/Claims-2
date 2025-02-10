@@ -20,6 +20,10 @@ app.register_blueprint(auth_bp)
 def home():
     return "Welcome to the Claims Management System!"
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
+
 # Policyholders Routes (Protected)
 app.add_url_rule('/policyholders', 'create_policyholder', jwt_required()(create_policyholder), methods=['POST'])
 app.add_url_rule('/policyholders', 'get_policyholders', jwt_required()(get_policyholders), methods=['GET'])
