@@ -122,8 +122,6 @@ Pygments==2.15.1
 pymongo==4.11
 pyOpenSSL==25.0.0
 pyparsing==3.1.1
-PyQt5==5.15.10
-PyQt5-Qt5==5.15.11
 PyQt5-sip==12.13.0
 pyrsistent==0.19.3
 PySocks==1.7.1
