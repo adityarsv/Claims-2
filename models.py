@@ -6,3 +6,4 @@ db = get_db()
 policyholders_collection = db.policyholders
 policies_collection = db.policies
 claims_collection = db.claims
+users_collection = db.users
