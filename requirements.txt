@@ -1,3 +1,4 @@
 Flask
 pymongo
 pymongo[srv]
+flask_jwt_extended
