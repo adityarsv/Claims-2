@@ -2,4 +2,5 @@ flask
 flask-pymongo
 dnspython
 gunicorn
-python3
+python
+pymongo[srv]
