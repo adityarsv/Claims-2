@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager, jwt_required
 from config import JWT_SECRET_KEY
+from flask_cors import CORS
 from auth import auth_bp
 from policyholders import create_policyholder, get_policyholders, update_policyholder, delete_policyholder
 from policies import create_policy, get_policies, update_policy, delete_policy
@@ -8,6 +9,7 @@ from claims import create_claim, get_claims, update_claim, delete_claim
 from flasgger import Swagger
 
 app = Flask(__name__)
+CORS(app)
 swagger = Swagger(app)
 
 
