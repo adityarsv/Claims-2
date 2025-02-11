@@ -3,3 +3,4 @@ pymongo
 pymongo[srv]
 flask_jwt_extended
 flasgger
+flask-cors
