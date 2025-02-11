@@ -1,7 +1,33 @@
 from flask import request, jsonify
+from flasgger import Swagger
+from flasgger import swag_from
 from models import policies_collection, policyholders_collection
 
 # ------------------------ POLICY CRUD ------------------------
+@swag_from({
+    'tags': ['Policies'],
+    'summary': 'Create a new policy',
+    'description': 'This endpoint creates a new policy for a policyholder.',
+    'parameters': [
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'policy_id': {'type': 'integer', 'example': 201},
+                    'policyholder_id': {'type': 'integer', 'example': 101},
+                    'policy_type': {'type': 'string', 'example': 'Health Insurance'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        201: {'description': 'Policy created successfully'},
+        400: {'description': 'Policy with this ID already exists'}
+    }
+})
 
 def create_policy():
     data = request.json
@@ -30,12 +56,64 @@ def create_policy():
     policies_collection.insert_one(new_policy)
     return jsonify({"message": "Policy created successfully"}), 201
 
+@swag_from({
+    'tags': ['Policies'],
+    'summary': 'Get all policies',
+    'description': 'Retrieves a list of all policies.',
+    'responses': {
+        200: {
+            'description': 'A list of policies',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'policy_id': {'type': 'integer'},
+                        'policyholder_id': {'type': 'integer'},
+                        'policy_type': {'type': 'string'}
+                    }
+                }
+            }
+        }
+    }
+})
+
 def get_policies():
     policies = list(policies_collection.find({}, {"_id": 0}))
     for policy in policies:
         policyholder = policyholders_collection.find_one({"policyholder_id": policy["policyholder_id"]}, {"_id": 0})
         policy["policyholder_name"] = policyholder["name"] if policyholder else "Unknown"
     return jsonify(policies)
+
+@swag_from({
+    'tags': ['Policies'],
+    'summary': 'Update a policy',
+    'description': 'Updates the details of a policy by its ID.',
+    'parameters': [
+        {
+            'name': 'policy_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 201
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'policy_type': {'type': 'string', 'example': 'Auto Insurance'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {'description': 'Policy updated successfully'},
+        404: {'description': 'Policy not found'}
+    }
+})
 
 def update_policy(policy_id):
     data = request.json
@@ -54,6 +132,25 @@ def update_policy(policy_id):
         {"$set": {"type": type, "amount": amount, "policyholder_id": policyholder_id}}
     )
     return jsonify({"message": "Policy updated successfully"}), 200
+
+@swag_from({
+    'tags': ['Policies'],
+    'summary': 'Delete a policy',
+    'description': 'Deletes a policy by its ID.',
+    'parameters': [
+        {
+            'name': 'policy_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 201
+        }
+    ],
+    'responses': {
+        200: {'description': 'Policy deleted successfully'},
+        404: {'description': 'Policy not found'}
+    }
+})
 
 def delete_policy(policy_id):
     # Ensure policy exists

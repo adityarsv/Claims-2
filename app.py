@@ -5,8 +5,11 @@ from auth import auth_bp
 from policyholders import create_policyholder, get_policyholders, update_policyholder, delete_policyholder
 from policies import create_policy, get_policies, update_policy, delete_policy
 from claims import create_claim, get_claims, update_claim, delete_claim
+from flasgger import Swagger
 
 app = Flask(__name__)
+swagger = Swagger(app)
+
 
 # JWT Configuration
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY

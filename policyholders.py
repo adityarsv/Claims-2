@@ -1,7 +1,33 @@
 from flask import request, jsonify
+from flasgger import Swagger
+from flasgger import swag_from
 from models import policyholders_collection
 
+
 # ------------------------ POLICYHOLDER CRUD ------------------------
+@swag_from({
+    'tags': ['Policyholders'],
+    'summary': 'Create a new policyholder',
+    'description': 'This endpoint creates a new policyholder.',
+    'parameters': [
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'policyholder_id': {'type': 'integer', 'example': 101},
+                    'name': {'type': 'string', 'example': 'John Doe'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        201: {'description': 'Policyholder created successfully'},
+        400: {'description': 'Policyholder with this ID already exists'}
+    }
+})
 
 def create_policyholder():
     data = request.json
@@ -21,9 +47,60 @@ def create_policyholder():
     policyholders_collection.insert_one(new_policyholder)
     return jsonify({"message": "Policyholder created successfully"}), 201
 
+@swag_from({
+    'tags': ['Policyholders'],
+    'summary': 'Get all policyholders',
+    'description': 'Retrieves a list of all policyholders.',
+    'responses': {
+        200: {
+            'description': 'A list of policyholders',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'policyholder_id': {'type': 'integer'},
+                        'name': {'type': 'string'}
+                    }
+                }
+            }
+        }
+    }
+})
+
 def get_policyholders():
     policyholders = list(policyholders_collection.find({}, {"_id": 0}))
     return jsonify(policyholders)
+
+@swag_from({
+    'tags': ['Policyholders'],
+    'summary': 'Update a policyholder',
+    'description': 'Updates the name of a policyholder by their ID.',
+    'parameters': [
+        {
+            'name': 'policyholder_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 101
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string', 'example': 'Jane Doe'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {'description': 'Policyholder updated successfully'},
+        404: {'description': 'Policyholder not found'}
+    }
+})
 
 def update_policyholder(policyholder_id):
     data = request.json
@@ -40,6 +117,25 @@ def update_policyholder(policyholder_id):
         {"$set": {"name": name}}
     )
     return jsonify({"message": "Policyholder updated successfully"}), 200
+
+@swag_from({
+    'tags': ['Policyholders'],
+    'summary': 'Delete a policyholder',
+    'description': 'Deletes a policyholder by their ID.',
+    'parameters': [
+        {
+            'name': 'policyholder_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 101
+        }
+    ],
+    'responses': {
+        200: {'description': 'Policyholder deleted successfully'},
+        404: {'description': 'Policyholder not found'}
+    }
+})
 
 def delete_policyholder(policyholder_id):
     # Find policyholder by ID

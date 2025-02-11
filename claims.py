@@ -1,7 +1,35 @@
 from flask import request, jsonify
+from flasgger import Swagger
+from flasgger import swag_from
 from models import claims_collection, policies_collection, policyholders_collection
 
 # ------------------------ CLAIMS CRUD ------------------------
+
+@swag_from({
+    'tags': ['Claims'],
+    'summary': 'Create a new claim',
+    'description': 'This endpoint allows a policyholder to file a new claim.',
+    'parameters': [
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'claim_id': {'type': 'integer', 'example': 301},
+                    'policy_id': {'type': 'integer', 'example': 201},
+                    'claim_amount': {'type': 'number', 'example': 5000.75},
+                    'status': {'type': 'string', 'example': 'Pending'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        201: {'description': 'Claim created successfully'},
+        400: {'description': 'Claim with this ID already exists'}
+    }
+})
 
 def create_claim():
     data = request.json
@@ -45,6 +73,29 @@ def create_claim():
     claims_collection.insert_one(new_claim)
     return jsonify({"message": "Claim created successfully"}), 201
 
+@swag_from({
+    'tags': ['Claims'],
+    'summary': 'Get all claims',
+    'description': 'Retrieves a list of all claims.',
+    'responses': {
+        200: {
+            'description': 'A list of claims',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'claim_id': {'type': 'integer'},
+                        'policy_id': {'type': 'integer'},
+                        'claim_amount': {'type': 'number'},
+                        'status': {'type': 'string'}
+                    }
+                }
+            }
+        }
+    }
+})
+
 def get_claims():
     claims = list(claims_collection.find({}, {"_id": 0}))
     for claim in claims:
@@ -55,6 +106,37 @@ def get_claims():
         claim["policyholder_name"] = policyholder["name"] if policyholder else "Unknown"
 
     return jsonify(claims)
+
+@swag_from({
+    'tags': ['Claims'],
+    'summary': 'Update a claim',
+    'description': 'Updates the details of a claim by its ID.',
+    'parameters': [
+        {
+            'name': 'claim_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 301
+        },
+        {
+            'name': 'body',
+            'in': 'body',
+            'required': True,
+            'schema': {
+                'type': 'object',
+                'properties': {
+                    'claim_amount': {'type': 'number', 'example': 6000.50},
+                    'status': {'type': 'string', 'example': 'Approved'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        200: {'description': 'Claim updated successfully'},
+        404: {'description': 'Claim not found'}
+    }
+})
 
 def update_claim(claim_id):
     data = request.json
@@ -83,6 +165,25 @@ def update_claim(claim_id):
         {"$set": {"amount": amount, "status": status, "policy_id": policy_id, "policyholder_id": policyholder_id}}
     )
     return jsonify({"message": "Claim updated successfully"}), 200
+
+@swag_from({
+    'tags': ['Claims'],
+    'summary': 'Delete a claim',
+    'description': 'Deletes a claim by its ID.',
+    'parameters': [
+        {
+            'name': 'claim_id',
+            'in': 'path',
+            'type': 'integer',
+            'required': True,
+            'example': 301
+        }
+    ],
+    'responses': {
+        200: {'description': 'Claim deleted successfully'},
+        404: {'description': 'Claim not found'}
+    }
+})
 
 def delete_claim(claim_id):
     # Ensure claim exists
