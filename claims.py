@@ -43,6 +43,23 @@ def create_claim():
     #if amount < 0:
         #return jsonify({"error": "Claim amount cannot be negative"}), 400
 
+    # Validate that claim_id, policy_id, policyholder_id, and amount are numbers
+    if not isinstance(claim_id, int):
+        return jsonify({"error": "Claim ID must be a number"}), 400
+
+    if not isinstance(policy_id, int):
+        return jsonify({"error": "Policy ID must be a number"}), 400
+
+    if not isinstance(policyholder_id, int):
+        return jsonify({"error": "Policyholder ID must be a number"}), 400
+
+    if not isinstance(amount, (int, float)):
+        return jsonify({"error": "Amount must be a number"}), 400
+
+    # Validate that status contains only alphabets
+    if not status.isalpha():
+        return jsonify({"error": "Status must contain only alphabets"}), 400
+        
     # Ensure policy exists
     policy = policies_collection.find_one({"policy_id": policy_id})
     if not policy:
@@ -145,6 +162,20 @@ def update_claim(claim_id):
     policy_id = data.get("policy_id")
     policyholder_id = data.get("policyholder_id")
 
+    # Validate that claim_id, policy_id, policyholder_id, and amount are numbers
+    if not isinstance(amount, (int, float)):
+        return jsonify({"error": "Amount must be a number"}), 400
+
+    if not isinstance(policy_id, int):
+        return jsonify({"error": "Policy ID must be a number"}), 400
+
+    if not isinstance(policyholder_id, int):
+        return jsonify({"error": "Policyholder ID must be a number"}), 400
+
+    # Validate that status contains only alphabets
+    if not status.isalpha():
+        return jsonify({"error": "Status must contain only alphabets"}), 400
+        
     # Ensure claim exists
     claim = claims_collection.find_one({"claim_id": claim_id})
     if not claim:
