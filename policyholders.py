@@ -113,6 +113,9 @@ def update_policyholder(policyholder_id):
     data = request.json
     name = data.get("name")
 
+    if not name.isalpha():
+        return jsonify({"error": "Name must contain only letters"}), 400
+
     # Find policyholder by ID
     policyholder = policyholders_collection.find_one({"policyholder_id": policyholder_id})
     if not policyholder:
