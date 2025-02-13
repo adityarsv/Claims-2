@@ -33,6 +33,13 @@ def create_policyholder():
     data = request.json
     policyholder_id = data.get("policyholder_id")
     name = data.get("name")
+# Validate that policyholder_id is a number
+    if not isinstance(policyholder_id, int):
+        return jsonify({"error": "Policyholder ID must be a number"}), 400
+
+    # Validate that name contains only letters
+    if not name.isalpha():
+        return jsonify({"error": "Name must contain only letters"}), 400
 
     # Validate that policyholder_id is unique
     existing_policyholder = policyholders_collection.find_one({"policyholder_id": policyholder_id})
