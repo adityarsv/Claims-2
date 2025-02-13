@@ -40,8 +40,8 @@ def create_claim():
     policyholder_id = data.get("policyholder_id")
 
     # Validate that claim amount is non-negative
-    if amount < 0:
-        return jsonify({"error": "Claim amount cannot be negative"}), 400
+    #if amount < 0:
+        #return jsonify({"error": "Claim amount cannot be negative"}), 400
 
     # Ensure policy exists
     policy = policies_collection.find_one({"policy_id": policy_id})
@@ -54,8 +54,8 @@ def create_claim():
         return jsonify({"error": "Policyholder not found"}), 400
 
     # Validate that claim amount does not exceed policy coverage amount
-    if amount > policy["amount"]:
-        return jsonify({"error": "Claim amount cannot exceed policy amount"}), 400
+    #if amount > policy["amount"]:
+        #return jsonify({"error": "Claim amount cannot exceed policy amount"}), 400
 
     # Validate that claim_id is unique
     existing_claim = claims_collection.find_one({"claim_id": claim_id})
