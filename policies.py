@@ -36,6 +36,20 @@ def create_policy():
     amount = data.get("amount")
     policyholder_id = data.get("policyholder_id")
 
+    # Validate that policy_id, policyholder_id, and amount are numbers
+    if not isinstance(policy_id, int):
+        return jsonify({"error": "Policy ID must be a number"}), 400
+
+    if not isinstance(policyholder_id, int):
+        return jsonify({"error": "Policyholder ID must be a number"}), 400
+
+    if not isinstance(amount, (int, float)):
+        return jsonify({"error": "Amount must be a number"}), 400
+
+    # Validate that type contains only letters
+    if not type.isalpha():
+        return jsonify({"error": "Policy type must contain only letters"}), 400
+        
     # Ensure policyholder exists
     policyholder = policyholders_collection.find_one({"policyholder_id": policyholder_id})
     if not policyholder:
@@ -121,6 +135,17 @@ def update_policy(policy_id):
     amount = data.get("amount")
     policyholder_id = data.get("policyholder_id")
 
+    # Validate that type contains only letters
+    if not type.isalpha():
+        return jsonify({"error": "Policy type must contain only letters"}), 400
+
+    # Validate that policyholder_id and amount are numbers
+    if not isinstance(policyholder_id, int):
+        return jsonify({"error": "Policyholder ID must be a number"}), 400
+
+    if not isinstance(amount, (int, float)):
+        return jsonify({"error": "Amount must be a number"}), 400
+        
     # Ensure policy exists
     policy = policies_collection.find_one({"policy_id": policy_id})
     if not policy:
