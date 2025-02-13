@@ -5,5 +5,4 @@ flask_jwt_extended
 flasgger
 flask-cors
 prometheus_client
-prometheus_client.exposition
 
