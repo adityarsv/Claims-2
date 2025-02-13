@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_jwt_extended import JWTManager, jwt_required
 from config import JWT_SECRET_KEY
 from flask_cors import CORS
@@ -7,11 +7,31 @@ from policyholders import create_policyholder, get_policyholders, update_policyh
 from policies import create_policy, get_policies, update_policy, delete_policy
 from claims import create_claim, get_claims, update_claim, delete_claim
 from flasgger import Swagger
+from prometheus_client import Counter, Histogram, generate_latest
+from prometheus_client.exposition import CONTENT_TYPE_LATEST
+import time
 
 app = Flask(__name__)
 CORS(app)
 swagger = Swagger(app)
 
+request_count = Counter('http_requests_total', 'Total HTTP Requests', ['method', 'endpoint'])
+request_latency = Histogram('http_request_duration_seconds', 'Request duration in seconds', ['method', 'endpoint'])
+
+@app.before_request
+def before_request():
+    request.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    request_count.labels(method=request.method, endpoint=request.path).inc()
+    latency = time.time() - request.start_time
+    request_latency.labels(method=request.method, endpoint=request.path).observe(latency)
+    return response
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 # JWT Configuration
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
