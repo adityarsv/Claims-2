@@ -156,8 +156,8 @@ def update_claim(claim_id):
         return jsonify({"error": "Policy not found"}), 400
 
     # Validate claim amount does not exceed policy amount
-    if amount > policy["amount"]:
-        return jsonify({"error": "Claim amount cannot exceed policy amount"}), 400
+    #if amount > policy["amount"]:
+        #return jsonify({"error": "Claim amount cannot exceed policy amount"}), 400
 
     # Update claim data
     claims_collection.update_one(
